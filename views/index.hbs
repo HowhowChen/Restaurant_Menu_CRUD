@@ -8,7 +8,7 @@
           <select class="rounded bg-light" name="condition">
             <option selected>搜尋條件</option>
             <option value="name" {{#if name}}selected{{/if}}>餐廳名稱</option>
-            <option value="type" {{#if type}}selected{{/if}}>餐廳種類</option>
+            <option value="category" {{#if category}}selected{{/if}}>餐廳種類</option>
           </select>
           <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳名稱(e.g.梅子)、種類(e.g.美式)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
           <div class="input-group-append">
@@ -52,6 +52,9 @@
               <i class="fas fa-star fa-xs"></i>
             </span>
               
+          </div>
+          <div class="card-footer d-flex justify-cotent-end flex-wrap">
+
           </div>
         </div>
       </a>

@@ -46,6 +46,50 @@ app.get('/restaurants/:id', (req, res) => {
     .catch(error => console.log(error))
 })
 
+// search 
+app.get('/search', (req, res) => {
+  const condition = req.query.condition
+  const keyword = req.query.keyword
+  let feedback = ''
+
+  //name
+  if (condition === 'name') {
+    return Restaurant.find({'name': {'$regex': keyword, '$options': '$i'}})
+      .lean()
+      .then(menus => {
+        if (menus.length !== 0) {
+          feedback = `發現:${menus.length}筆`
+          return res.render('index', {menus, keyword, name: condition, feedback})
+        } else {
+          feedback = '未發現!!!'
+          return res.render('index', {menus, keyword, name: condition, feedback})
+        }
+      })
+      .catch(error => console.log(error))
+  } 
+
+  //category
+  if (condition === 'category') {
+     return Restaurant.find({'category': {'$regex': keyword, '$options': '$i'}})
+    .lean()
+    .then(menus => {
+      if (menus.length !== 0) {
+        feedback = `發現:${menus.length}筆`
+        return res.render('index', {menus, keyword, category: condition, feedback})
+      } else {
+        feedback = '未發現!!!'
+        return res.render('index', {menus, keyword, category: condition, feedback})
+      }
+    })
+    .catch(error => console.log(error))
+  }
+
+  feedback = '請選擇條件!!!'
+  res.render('index', {keyword, feedback })
+})
+
+
+
 //setting listen
 app.listen(port, () => {
   console.log(`The server is listening on http://localhost:${port}`)
