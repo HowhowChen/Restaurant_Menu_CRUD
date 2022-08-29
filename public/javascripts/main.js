@@ -51,9 +51,6 @@ function sortDownToUp() {
     dataPanel.appendChild(item.html)
   })
 }
-  
-
-
-
+console.log(1231)
 
 

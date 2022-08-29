@@ -35,6 +35,24 @@
     <!-- partial templates will replace the part of "body" here -->
     {{{ body }}}
 
+    <!--form control-->
+    <script>
+      const submitButton = document.querySelector('#submitButton')
+      const form  = document.querySelector('#form')
+
+      submitButton.addEventListener('click', function onSubmitButtonClicked(event) {
+        form.classList.add('was-validated')
+        console.log(123)
+      })
+    
+      form.addEventListener('submit', function formSubmitted(event) {
+        if (!form.checkValidity()) {
+          event.stopPropagation()
+          event.preventDefault()
+          alert('Form invalid')
+        }
+      })
+    </script>
     <!-- include javascript files here -->
     <script src="/javascripts/popper.js"></script>
     <script src="/javascripts/bootstrap.js"></script>

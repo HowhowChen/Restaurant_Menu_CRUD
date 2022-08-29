@@ -35,6 +35,13 @@ app.get('/', (req, res) => {
     .catch(error => console.log(error))
 })
 
+//create page
+app.get('/restaurants/new', (req, res) => {
+  res.render('new')
+})
+
+
+
 // detail 
 app.get('/restaurants/:id', (req, res) => {
   const id = req.params.id
@@ -87,6 +94,9 @@ app.get('/search', (req, res) => {
   feedback = '請選擇條件!!!'
   res.render('index', {keyword, feedback })
 })
+
+
+
 
 
 //delete 
