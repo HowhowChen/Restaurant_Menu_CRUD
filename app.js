@@ -35,6 +35,17 @@ app.get('/', (req, res) => {
     .catch(error => console.log(error))
 })
 
+// detail 
+app.get('/restaurants/:id', (req, res) => {
+  const id = req.params.id
+  return Restaurant.findById(id)
+    .lean()
+    .then(menu => {
+      res.render('show', { menu })
+    })
+    .catch(error => console.log(error))
+})
+
 //setting listen
 app.listen(port, () => {
   console.log(`The server is listening on http://localhost:${port}`)
