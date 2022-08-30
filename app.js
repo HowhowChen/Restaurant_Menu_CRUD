@@ -43,11 +43,13 @@ app.get('/restaurants/new', (req, res) => {
 //setting create function
 app.post('/restaurants/new', (req, res) => {
   const menu = req.body
-  console.log(menu)
+  return Restaurant.create(menu)
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
 })
 
 
-// detail 
+//setting read detail function
 app.get('/restaurants/:id', (req, res) => {
   const id = req.params.id
   return Restaurant.findById(id)
@@ -58,7 +60,7 @@ app.get('/restaurants/:id', (req, res) => {
     .catch(error => console.log(error))
 })
 
-// search 
+//setting search function 
 app.get('/search', (req, res) => {
   const condition = req.query.condition
   const keyword = req.query.keyword
@@ -104,7 +106,7 @@ app.get('/search', (req, res) => {
 
 
 
-//delete 
+//setting delete function
 app.post('/restaurants/:id/delete', (req, res) => {
   const id = req.params.id
   return Restaurant.findById(id)
