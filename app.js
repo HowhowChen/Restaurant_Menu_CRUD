@@ -103,7 +103,14 @@ app.get('/search', (req, res) => {
 })
 
 
-
+//setting delete page
+app.get('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
+  return Restaurant.findById(id)
+    .lean()
+    .then(menu => res.render('edit', { menu }))
+    .catch(error => console.log(error))
+})
 
 
 //setting delete function
