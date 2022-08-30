@@ -1,6 +1,6 @@
 <h1 class="text-center text-secondary">修改餐廳</h1>
 <div class="container">
-  <form novalidate id="form" action="/restaurants/new" method="POST"> 
+  <form novalidate id="form" action="/restaurants/{{menu._id}}/edit" method="POST"> 
     <div class="mb-3">
       <label for="name" class="form-label">店名</label>
       <input id="name" name="name" type="text" class="form-control" placeholder="布娜飛比利時啤酒餐廳" value="{{menu.name}}" required>

@@ -24,7 +24,6 @@ db.on('error', () => console.log('MongoDB Error'))
 db.once('open', () => console.log('MongoDB Connect'))
 
 
-
 //index
 app.get('/', (req, res) => {
   return Restaurant.find()
@@ -103,12 +102,27 @@ app.get('/search', (req, res) => {
 })
 
 
-//setting delete page
+//setting edit page
 app.get('/restaurants/:id/edit', (req, res) => {
   const id = req.params.id
   return Restaurant.findById(id)
     .lean()
     .then(menu => res.render('edit', { menu }))
+    .catch(error => console.log(error))
+})
+
+// setting edit function
+app.post('/restaurants/:id/edit', (req, res) => {
+  const id = req.params.id
+  const newMenu = req.body
+  const {name, name_en, category, image, location, phone, google_map, rating, description } = newMenu 
+  return Restaurant.findById(id)
+    .then(menu => {
+      [ menu.name, menu.name_en, menu.category, menu.image, menu.location, menu.phone, menu.google_map, menu.rating, menu.description ] = 
+      [ name, name_en, category, image,  location, phone, google_map, rating, description]      
+      return menu.save()
+    })
+    .then(() => res.redirect(`/restaurants/${id}`))
     .catch(error => console.log(error))
 })
 
