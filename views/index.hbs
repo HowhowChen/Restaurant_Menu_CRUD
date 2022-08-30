@@ -40,7 +40,7 @@
 
   <div class="row" id="data-panel">
     {{#each menus}}
-    <div class="col-sm-3" id="menu" data-id="{{this.rating}}">
+    <div class="col-sm-4" id="menu" data-id="{{this.rating}}">
         <div class="card mb-3">
           <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}">
           <div class="card-body p-3">
@@ -67,6 +67,47 @@
     </div>
     {{/each}}
   </div>
+
+
+  <nav aria-label="..." class="d-flex justify-content-center">
+    <ul class="pagination">
+      {{#if first}}
+        {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/{{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+        <li class="page-item">
+          <a class="page-link" href="/{{nextPage}}">Next</a>
+        </li>  
+      {{/if}}
+
+      {{#if middle}}
+        <li class="page-item">
+          <a class="page-link" href="/{{previousPage}}">Previous</a>
+        </li>
+       {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/{{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+        <li class="page-item">
+          <a class="page-link" href="/{{nextPage}}">Next</a>
+        </li> 
+      {{/if}}
+
+      {{#if end}}
+        <li class="page-item">
+          <a class="page-link" href="/{{previousPage}}">Previous</a>
+        </li>
+        {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/{{this}}">{{this}}</a>
+        </li>
+        {{/each}} 
+      {{/if}}
+    </ul>
+  </nav>
     
 </div>
 

@@ -4,6 +4,8 @@ const mongoose = require('mongoose')
 const Restaurant = require('./models/Restaurant')
 const app = express()
 const port = 3000
+const PER_PAGE_MENU = 12
+
 
 //setting handlebars 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
@@ -29,10 +31,43 @@ app.get('/', (req, res) => {
   return Restaurant.find()
     .lean()
     .then(menus => {
-      res.render('index', { menus })
+      const pages = getPaginatorPages(menus)
+      menus = getRenderByPage(menus) 
+      res.render('index', { menus, pages, first: 1, nextPage: 2 })
     })
     .catch(error => console.log(error))
 })
+
+
+//setting index paginator function
+app.get('/:page', (req, res) => {
+  const page = Number(req.params.page)    
+  return Restaurant.find()
+    .lean()
+    .then(menus => {
+      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+      const pages = getPaginatorPages(menus) 
+      menus = getRenderByPage(menus, page)
+      let previousPage, nextPage  
+      switch (page) {
+        case 1:           //首頁
+          nextPage = page + 1
+          res.render('index', {menus, pages, first: 1, nextPage})
+          break
+        case totalPage:   //最後一頁
+          previousPage = page - 1
+          res.render('index', {menus, pages, end: 1, previousPage})
+          break
+        default:         //中間的部分
+          nextPage = page + 1
+          previousPage = page - 1
+          res.render('index', {menus, pages, middle: 1, previousPage, nextPage})
+          break
+      }      
+    })
+})
+
+
 
 //create page
 app.get('/restaurants/new', (req, res) => {
@@ -142,3 +177,20 @@ app.post('/restaurants/:id/delete', (req, res) => {
 app.listen(port, () => {
   console.log(`The server is listening on http://localhost:${port}`)
 })
+
+
+//for render paginator
+function getPaginatorPages(menus) {
+  const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+  const pages = []
+  for (let i = 1; i <= totalPage; i++) {
+    pages.push(i)
+  }
+  return pages
+}
+
+//render msnus; default page = 1
+function getRenderByPage(menus, page = 1) {
+  const startIndex = (page - 1) * PER_PAGE_MENU
+  return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
+}
