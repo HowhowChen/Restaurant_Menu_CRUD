@@ -40,18 +40,20 @@
       const submitButton = document.querySelector('#submitButton')
       const form  = document.querySelector('#form')
 
-      submitButton.addEventListener('click', function onSubmitButtonClicked(event) {
-        form.classList.add('was-validated')
-        console.log(123)
-      })
+      try {
+        submitButton.addEventListener('click', function onSubmitButtonClicked(event) {
+          form.classList.add('was-validated')
+        })
     
-      form.addEventListener('submit', function formSubmitted(event) {
-        if (!form.checkValidity()) {
-          event.stopPropagation()
-          event.preventDefault()
-          alert('Form invalid')
-        }
-      })
+        form.addEventListener('submit', function formSubmitted(event) {
+          if (!form.checkValidity()) {
+            event.stopPropagation()
+            event.preventDefault()
+            alert('Form invalid')
+          }
+        })
+      } catch {}
+      
     </script>
     <!-- include javascript files here -->
     <script src="/javascripts/popper.js"></script>

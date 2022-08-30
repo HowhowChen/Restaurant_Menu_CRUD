@@ -40,6 +40,11 @@ app.get('/restaurants/new', (req, res) => {
   res.render('new')
 })
 
+//setting create function
+app.post('/restaurants/new', (req, res) => {
+  const menu = req.body
+  console.log(menu)
+})
 
 
 // detail 

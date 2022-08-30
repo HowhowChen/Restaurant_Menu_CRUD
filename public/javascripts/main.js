@@ -2,15 +2,19 @@ const ratingSort = document.querySelector('#rating-sort')
 const dataPanel = document.querySelector('#data-panel')
 const menus = document.querySelectorAll('#menu')
 const menuObject = []
+try {
+  ratingSort.addEventListener('change', event => {
+    const value = event.target.value
+    if (value === 'up') {
+      sortUpToDown()
+    } else if (value === 'down') {
+      sortDownToUp()
+    }
+  })
+} catch {
+  
+}
 
-ratingSort.addEventListener('change', event => {
-  const value = event.target.value
-  if (value === 'up') {
-    sortUpToDown()
-  } else if (value === 'down') {
-    sortDownToUp()
-  }
-})
 
 //高到低
 function sortUpToDown() {
@@ -51,6 +55,6 @@ function sortDownToUp() {
     dataPanel.appendChild(item.html)
   })
 }
-console.log(1231)
+
 
 
