@@ -76,25 +76,13 @@
     <ul class="pagination">
       <!--首頁-->
       {{#if first}}
-
-        <!--condition = name-->
-        {{#if name}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
+       
+        {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+        </li>
+        {{/each}}
         
-        <!--condition = category-->
-        {{#if category}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
-
         <!--only totalPage more than one, the button will show-->
         {{#if nextPage}}   
         <li class="page-item">
@@ -110,26 +98,14 @@
 
         <li class="page-item">
           {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous/a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
 
-        <!--condition = name-->
-        {{#if name}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
-        
-        <!--condition = category-->
-        {{#if category}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
+        {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+        </li>
+        {{/each}}
 
         <li class="page-item">
           {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
@@ -143,26 +119,14 @@
 
         <li class="page-item">
           {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous/a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
 
-        <!--condition = name-->
-        {{#if name}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
-        
-        <!--condition = category-->
-        {{#if category}}
-          {{#each pages}}
-          <li class="page-item">
-            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
-          </li>
-          {{/each}}
-        {{/if}}
+        {{#each pages}}
+        <li class="page-item">
+          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+        </li>
+        {{/each}}
 
       {{/if}}
     </ul>

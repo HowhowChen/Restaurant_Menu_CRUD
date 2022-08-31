@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
 
 //setting index paginator function
 app.get('/index/:page', (req, res) => {
-  const page = Number(req.params.page)    
+  let page = Number(req.params.page)    
   return Restaurant.find()
     .lean()
     .then(menus => {
@@ -114,7 +114,7 @@ app.get('/search', (req, res) => {
   let feedback = ''
   
   if (page !== undefined) {
-    return getRenderBySearchPaginator()
+    return getRenderBySearchPaginator(res, condition, keyword, page, feedback)
   }
 
   //name
@@ -130,7 +130,7 @@ app.get('/search', (req, res) => {
       .then(menus => {
         if (menus.length !== 0) {
           const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-          const pages = getPaginatorPages(menus)
+          const pages = getSearchPaginatorPages(menus, 1, condition, keyword)
           feedback = `發現:${menus.length}筆`
           menus = getRenderByPage(menus)
           
@@ -164,7 +164,7 @@ app.get('/search', (req, res) => {
       .then(menus => {
         if (menus.length !== 0) {
           const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-          const pages = getPaginatorPages(menus)
+          const pages = getSearchPaginatorPages(menus, 1, condition, keyword)
           feedback = `發現:${menus.length}筆`
           menus = getRenderByPage(menus)
           
@@ -234,7 +234,7 @@ app.listen(port, () => {
 
 
 //for render paginator
-function getPaginatorPages(menus, currentPage) {
+function getPaginatorPages(menus, currentPage = 1) {
   const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
   const pages = []
 
@@ -269,4 +269,106 @@ function getRenderByPage(menus, page = 1) {
   return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
 }
 
+//for render paginator by search
+function getSearchPaginatorPages(menus, currentPage, condition, keyword) {
+  const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+  const pages = []
 
+  let startPage = 1
+  let maxLastPage = totalPage
+
+  if (totalPage > 5) {
+    if (currentPage <= 3) {
+      startPage = 1
+      maxLastPage = 5
+    } else if ((currentPage + 1) === totalPage) {
+      startPage = currentPage - 3
+      maxLastPage = currentPage + 1
+    } else if (currentPage === totalPage) {
+      startPage = currentPage - 4
+      maxLastPage = totalPage
+    } else if (currentPage > 3) {
+      startPage = currentPage - 2
+      maxLastPage = currentPage + 2
+    }
+  }
+
+  for (let i = startPage; i <= maxLastPage; i++) {
+    pages.push({
+      page: i,
+      condition,
+      keyword
+    })
+  }
+  return pages
+}
+
+
+
+function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
+  page = Number(page)
+  //condition  = name
+  if (condition === 'name') {
+    return Restaurant.find({'name': {'$regex': keyword, '$options': '$i'}})
+      .lean()
+      .then(menus => {
+        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+        const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        menus = getRenderByPage(menus, page )
+        let previousPage, nextPage
+        
+        switch (page) {
+          case 1:
+            if (totalPage > 1) {   //totalPage > 1, the nextPage will show
+              nextPage = page  +  1
+              res.render('search', {menus, pages, first: 1, page, nextPage, totalPage, keyword, name: condition, feedback})
+            } else {
+              res.render('search', {menus, pages, first: 1, page, totalPage, keyword, name: condition, feedback})
+            }
+            break
+          case totalPage:
+            previousPage = page  - 1
+            res.render('search', {menus, pages, end: 1, page, previousPage, totalPage, keyword, name: condition, feedback})
+            break
+          default:
+            nextPage = page  + 1
+            previousPage = page  - 1
+            res.render('search', {menus, pages, middle: 1, page, previousPage, nextPage,totalPage, keyword, name: condition, feedback})
+            break
+        }
+      })
+      .catch(error => console.log(error))
+  } 
+
+  if (condition === 'category') {
+    return Restaurant.find({'category': {'$regex': keyword, '$options': '$i'}})
+      .lean()
+      .then(menus => {
+        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+        const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        menus = getRenderByPage(menus, page )
+        let previousPage, nextPage
+        
+        switch (page) {
+          case 1:
+            if (totalPage > 1) {   //totalPage > 1, the nextPage will show
+              nextPage = page  +  1
+              res.render('search', {menus, pages, first: 1, page, nextPage, totalPage, keyword, category: condition, feedback})
+            } else {
+              res.render('search', {menus, pages, first: 1, page, totalPage, keyword, category: condition, feedback})
+            }
+            break
+          case totalPage:
+            previousPage = page  - 1
+            res.render('search', {menus, pages, end: 1, page, previousPage, totalPage, keyword, category: condition, feedback})
+            break
+          default:
+            nextPage = page  + 1
+            previousPage = page  - 1
+            res.render('search', {menus, pages, middle: 1, page, previousPage, nextPage, totalPage, keyword, category: condition, feedback})
+            break
+        }
+      })
+      .catch(error => console.log(error))
+  }
+}
