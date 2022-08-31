@@ -33,8 +33,15 @@ app.get('/', (req, res) => {
     .then(menus => {
       const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
       const pages = getPaginatorPages(menus)
-      menus = getRenderByPage(menus) 
-      res.render('index', { menus, pages, first: 1, nextPage: 2, page: 1, totalPage })
+      menus = getRenderByPage(menus)
+      switch (totalPage) {
+        case 1: 
+          res.render('index', { menus, pages, first: 1, page: 1, totalPage })
+          break
+        default:   //totalPage > 1, the nextPage will show
+          res.render('index', { menus, pages, first: 1, nextPage: 2, page: 1, totalPage })
+          break
+      } 
     })
     .catch(error => console.log(error))
 })
@@ -52,8 +59,12 @@ app.get('/:page', (req, res) => {
       let previousPage, nextPage  
       switch (page) {
         case 1:           //首頁
-          nextPage = page + 1
-          res.render('index', {menus, pages, first: 1, nextPage, page, totalPage})
+          if (totalPage > 1) {   //totalPage > 1, the nextPage will show
+            nextPage = page + 1
+            res.render('index', {menus, pages, first: 1, nextPage, page, totalPage})
+          } else {
+            res.render('index', { menus, pages, first: 1, page: 1, totalPage })
+          }
           break
         case totalPage:   //最後一頁
           previousPage = page - 1
