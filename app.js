@@ -176,7 +176,7 @@ app.get('/search', (req, res) => {
               res.render('search', {menus, pages, first: 1, nextPage: 2, page: 1, totalPage, keyword, category: condition, feedback})
               break
           }
-          //return res.render('search', {menus, keyword, category: condition, feedback})
+          
         } else {
           feedback = '未發現!!!'
           return res.render('search', {keyword, category: condition, feedback})
@@ -314,6 +314,7 @@ function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
       .then(menus => {
         const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
         const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        feedback = `發現:${menus.length}筆`
         menus = getRenderByPage(menus, page )
         let previousPage, nextPage
         
@@ -321,7 +322,7 @@ function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
           case 1:
             if (totalPage > 1) {   //totalPage > 1, the nextPage will show
               nextPage = page  +  1
-              res.render('search', {menus, pages, first: 1, page, nextPage, totalPage, keyword, name: condition, feedback})
+              res.render('search', {menus, pages, first: 1, page, totalPage, nextPage,  keyword, name: condition, feedback})
             } else {
               res.render('search', {menus, pages, first: 1, page, totalPage, keyword, name: condition, feedback})
             }
@@ -346,6 +347,7 @@ function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
       .then(menus => {
         const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
         const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        feedback = `發現:${menus.length}筆`
         menus = getRenderByPage(menus, page )
         let previousPage, nextPage
         
