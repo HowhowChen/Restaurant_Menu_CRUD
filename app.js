@@ -31,9 +31,10 @@ app.get('/', (req, res) => {
   return Restaurant.find()
     .lean()
     .then(menus => {
+      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
       const pages = getPaginatorPages(menus)
       menus = getRenderByPage(menus) 
-      res.render('index', { menus, pages, first: 1, nextPage: 2 })
+      res.render('index', { menus, pages, first: 1, nextPage: 2, page: 1, totalPage })
     })
     .catch(error => console.log(error))
 })
@@ -46,22 +47,22 @@ app.get('/:page', (req, res) => {
     .lean()
     .then(menus => {
       const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-      const pages = getPaginatorPages(menus) 
+      const pages = getPaginatorPages(menus, page) 
       menus = getRenderByPage(menus, page)
       let previousPage, nextPage  
       switch (page) {
         case 1:           //首頁
           nextPage = page + 1
-          res.render('index', {menus, pages, first: 1, nextPage})
+          res.render('index', {menus, pages, first: 1, nextPage, page, totalPage})
           break
         case totalPage:   //最後一頁
           previousPage = page - 1
-          res.render('index', {menus, pages, end: 1, previousPage})
+          res.render('index', {menus, pages, end: 1, previousPage,  page, totalPage})
           break
         default:         //中間的部分
           nextPage = page + 1
           previousPage = page - 1
-          res.render('index', {menus, pages, middle: 1, previousPage, nextPage})
+          res.render('index', {menus, pages, middle: 1, previousPage, nextPage,  page, totalPage})
           break
       }      
     })
@@ -180,10 +181,30 @@ app.listen(port, () => {
 
 
 //for render paginator
-function getPaginatorPages(menus) {
+function getPaginatorPages(menus, currentPage) {
   const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
   const pages = []
-  for (let i = 1; i <= totalPage; i++) {
+
+  let startPage = 1
+  let maxLastPage = totalPage
+
+  if (totalPage > 5) {
+    if (currentPage <= 3) {
+      startPage = 1
+      maxLastPage = 5
+    } else if ((currentPage + 1) === totalPage) {
+      startPage = currentPage - 3
+      maxLastPage = currentPage + 1
+    } else if (currentPage === totalPage) {
+      startPage = currentPage - 4
+      maxLastPage = totalPage
+    } else if (currentPage > 3) {
+      startPage = currentPage - 2
+      maxLastPage = currentPage + 2
+    }
+  }
+
+  for (let i = startPage; i <= maxLastPage; i++) {
     pages.push(i)
   }
   return pages
@@ -194,3 +215,5 @@ function getRenderByPage(menus, page = 1) {
   const startIndex = (page - 1) * PER_PAGE_MENU
   return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
 }
+
+

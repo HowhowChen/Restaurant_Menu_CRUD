@@ -29,12 +29,15 @@
 <!-- restaurant list -->
 <div class="container mt-5">
   <div class="row">
-    <div class="d-flex flex-row mb-3">
+    <div class="d-flex flex-row justify-content-between mb-3">
       <select class="form-select" aria-label="Default select example" style="width:150px ;" id="rating-sort">
         <option selected>評價排序方式</option>
         <option value="up">🌟由大到小</option>
         <option value="down">🌟由小到大</option>
       </select>
+      <div class="text-primary text-secondary">
+        頁數<span id="page">{{page}}</span>/{{totalPage}}
+      </div>
     </div>
   </div>
 
