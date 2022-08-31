@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
 
 
 //setting index paginator function
-app.get('/:page', (req, res) => {
+app.get('/index/:page', (req, res) => {
   const page = Number(req.params.page)    
   return Restaurant.find()
     .lean()
@@ -110,19 +110,42 @@ app.get('/restaurants/:id', (req, res) => {
 app.get('/search', (req, res) => {
   const condition = req.query.condition
   const keyword = req.query.keyword
+  const page = req.query.page
   let feedback = ''
+  
+  if (page !== undefined) {
+    return getRenderBySearchPaginator()
+  }
 
   //name
   if (condition === 'name') {
+     //keyword equal empty
+    if (keyword.trim().length === 0) {
+      feedback = '請輸入關鍵字!'
+      return res.render('search', {keyword, feedback, name: condition})
+    }
+
     return Restaurant.find({'name': {'$regex': keyword, '$options': '$i'}})
       .lean()
       .then(menus => {
         if (menus.length !== 0) {
+          const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+          const pages = getPaginatorPages(menus)
           feedback = `發現:${menus.length}筆`
-          return res.render('index', {menus, keyword, name: condition, feedback})
+          menus = getRenderByPage(menus)
+          
+          switch (totalPage) {
+            case 1:
+              res.render('search', {menus, pages, first: 1, page: 1, totalPage, keyword, name: condition, feedback})
+              break
+            default:
+              res.render('search', {menus, pages, first: 1, nextPage: 2, page: 1, totalPage, keyword, name: condition, feedback})
+              break
+          }
+          //return res.render('search', {menus, keyword, name: condition, feedback})
         } else {
           feedback = '未發現!!!'
-          return res.render('index', {menus, keyword, name: condition, feedback})
+          return res.render('search', {keyword, name: condition, feedback})
         }
       })
       .catch(error => console.log(error))
@@ -130,22 +153,41 @@ app.get('/search', (req, res) => {
 
   //category
   if (condition === 'category') {
-     return Restaurant.find({'category': {'$regex': keyword, '$options': '$i'}})
-    .lean()
-    .then(menus => {
-      if (menus.length !== 0) {
-        feedback = `發現:${menus.length}筆`
-        return res.render('index', {menus, keyword, category: condition, feedback})
-      } else {
-        feedback = '未發現!!!'
-        return res.render('index', {menus, keyword, category: condition, feedback})
-      }
-    })
-    .catch(error => console.log(error))
+    //keyword equal empty
+    if (keyword.trim().length === 0) {
+      feedback = '請輸入關鍵字!'
+      return res.render('search', {keyword, feedback, category: condition})
+    }
+
+    return Restaurant.find({'category': {'$regex': keyword, '$options': '$i'}})
+      .lean()
+      .then(menus => {
+        if (menus.length !== 0) {
+          const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+          const pages = getPaginatorPages(menus)
+          feedback = `發現:${menus.length}筆`
+          menus = getRenderByPage(menus)
+          
+          switch (totalPage) {
+            case 1:
+              res.render('search', {menus, pages, first: 1, page: 1, totalPage, keyword, category: condition, feedback})
+              break
+            default:
+              res.render('search', {menus, pages, first: 1, nextPage: 2, page: 1, totalPage, keyword, category: condition, feedback})
+              break
+          }
+          //return res.render('search', {menus, keyword, category: condition, feedback})
+        } else {
+          feedback = '未發現!!!'
+          return res.render('search', {keyword, category: condition, feedback})
+        }
+      })
+      .catch(error => console.log(error))
   }
 
+  // condition is empty
   feedback = '請選擇條件!!!'
-  res.render('index', {keyword, feedback })
+  res.render('search', {keyword, feedback })
 })
 
 

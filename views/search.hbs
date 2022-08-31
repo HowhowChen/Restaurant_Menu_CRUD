@@ -74,42 +74,96 @@
 
   <nav aria-label="..." class="d-flex justify-content-center">
     <ul class="pagination">
+      <!--首頁-->
       {{#if first}}
-        {{#each pages}}
+
+        <!--condition = name-->
+        {{#if name}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+        
+        <!--condition = category-->
+        {{#if category}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+
+        <!--only totalPage more than one, the button will show-->
+        {{#if nextPage}}   
         <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-        {{#if nextPage}}   <!--only totalPage more than one, the button will show-->
-        <li class="page-item">
-          <a class="page-link" href="/index/{{nextPage}}">Next</a>
+          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>  
         {{/if}}
+
       {{/if}}
 
+      <!--中間頁-->
       {{#if middle}}
+
         <li class="page-item">
-          <a class="page-link" href="/index/{{previousPage}}">Previous</a>
+          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous/a>{{/if}}
         </li>
-       {{#each pages}}
+
+        <!--condition = name-->
+        {{#if name}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+        
+        <!--condition = category-->
+        {{#if category}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+
         <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
+          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>
-        {{/each}}
-        <li class="page-item">
-          <a class="page-link" href="/index/{{nextPage}}">Next</a>
-        </li> 
+ 
       {{/if}}
 
+      <!--末頁-->
       {{#if end}}
+
         <li class="page-item">
-          <a class="page-link" href="/index/{{previousPage}}">Previous</a>
+          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous/a>{{/if}}
         </li>
-        {{#each pages}}
-        <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
-        </li>
-        {{/each}} 
+
+        <!--condition = name-->
+        {{#if name}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+        
+        <!--condition = category-->
+        {{#if category}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{this}}">{{this}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+
       {{/if}}
     </ul>
   </nav>
