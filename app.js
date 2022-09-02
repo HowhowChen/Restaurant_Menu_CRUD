@@ -36,10 +36,10 @@ app.get('/', (req, res) => {
       menus = getRenderByPage(menus)
       switch (totalPage) {
         case 1: 
-          res.render('index', { menus, pages, first: 1, page: 1, totalPage })
+          res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage })
           break
         default:   //totalPage > 1, the nextPage will show
-          res.render('index', { menus, pages, first: 1, nextPage: 2, page: 1, totalPage })
+          res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage })
           break
       } 
     })
@@ -48,32 +48,32 @@ app.get('/', (req, res) => {
 
 
 //setting index paginator function
-app.get('/index/:page', (req, res) => {
-  let page = Number(req.params.page)    
+app.get('/index/:currentPage', (req, res) => {
+  let currentPage = Number(req.params.currentPage)    
   return Restaurant.find()
     .lean()
     .then(menus => {
       const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-      const pages = getPaginatorPages(menus, page) 
-      menus = getRenderByPage(menus, page)
+      const pages = getPaginatorPages(menus, currentPage) 
+      menus = getRenderByPage(menus, currentPage)
       let previousPage, nextPage  
-      switch (page) {
+      switch (currentPage) {
         case 1:           //首頁
           if (totalPage > 1) {   //totalPage > 1, the nextPage will show
-            nextPage = page + 1
-            res.render('index', {menus, pages, first: 1, nextPage, page, totalPage})
+            nextPage = currentPage + 1
+            res.render('index', {menus, pages, first: 1, nextPage, currentPage, totalPage})
           } else {
-            res.render('index', { menus, pages, first: 1, page: 1, totalPage })
+            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage })
           }
           break
         case totalPage:   //最後一頁
-          previousPage = page - 1
-          res.render('index', {menus, pages, end: 1, previousPage,  page, totalPage})
+          previousPage = currentPage - 1
+          res.render('index', {menus, pages, end: 1, previousPage,  currentPage, totalPage})
           break
         default:         //中間的部分
-          nextPage = page + 1
-          previousPage = page - 1
-          res.render('index', {menus, pages, middle: 1, previousPage, nextPage,  page, totalPage})
+          nextPage = currentPage + 1
+          previousPage = currentPage - 1
+          res.render('index', {menus, pages, middle: 1, previousPage, nextPage,  currentPage, totalPage})
           break
       }      
     })
@@ -110,11 +110,11 @@ app.get('/restaurants/:id', (req, res) => {
 app.get('/search', (req, res) => {
   const condition = req.query.condition
   const keyword = req.query.keyword
-  const page = req.query.page
+  const currentPage= req.query.page
   let feedback = ''
   
-  if (page !== undefined) {
-    return getRenderBySearchPaginator(res, condition, keyword, page, feedback)
+  if (currentPage !== undefined) {
+    return getRenderBySearchPaginator(res, condition, keyword, currentPage, feedback)
   }
 
   //name
@@ -136,10 +136,10 @@ app.get('/search', (req, res) => {
           
           switch (totalPage) {
             case 1:
-              res.render('search', {menus, pages, first: 1, page: 1, totalPage, keyword, name: condition, feedback})
+              res.render('search', {menus, pages, first: 1, currentPage: 1, totalPage, keyword, name: condition, feedback})
               break
             default:
-              res.render('search', {menus, pages, first: 1, nextPage: 2, page: 1, totalPage, keyword, name: condition, feedback})
+              res.render('search', {menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, name: condition, feedback})
               break
           }
           //return res.render('search', {menus, keyword, name: condition, feedback})
@@ -170,10 +170,10 @@ app.get('/search', (req, res) => {
           
           switch (totalPage) {
             case 1:
-              res.render('search', {menus, pages, first: 1, page: 1, totalPage, keyword, category: condition, feedback})
+              res.render('search', {menus, pages, first: 1, currentPage: 1, totalPage, keyword, category: condition, feedback})
               break
             default:
-              res.render('search', {menus, pages, first: 1, nextPage: 2, page: 1, totalPage, keyword, category: condition, feedback})
+              res.render('search', {menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, category: condition, feedback})
               break
           }
           
@@ -264,8 +264,8 @@ function getPaginatorPages(menus, currentPage = 1) {
 }
 
 //render msnus; default page = 1
-function getRenderByPage(menus, page = 1) {
-  const startIndex = (page - 1) * PER_PAGE_MENU
+function getRenderByPage(menus, currentPage = 1) {
+  const startIndex = (currentPage - 1) * PER_PAGE_MENU
   return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
 }
 
@@ -305,36 +305,36 @@ function getSearchPaginatorPages(menus, currentPage, condition, keyword) {
 
 
 
-function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
-  page = Number(page)
+function getRenderBySearchPaginator(res, condition, keyword, currentPage, feedback) {
+  currentPage = Number(currentPage)
   //condition  = name
   if (condition === 'name') {
     return Restaurant.find({'name': {'$regex': keyword, '$options': '$i'}})
       .lean()
       .then(menus => {
         const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-        const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        const pages =  getSearchPaginatorPages(menus, currentPage, condition, keyword)
         feedback = `發現:${menus.length}筆`
-        menus = getRenderByPage(menus, page )
+        menus = getRenderByPage(menus, currentPage )
         let previousPage, nextPage
         
-        switch (page) {
+        switch (currentPage) {
           case 1:
             if (totalPage > 1) {   //totalPage > 1, the nextPage will show
-              nextPage = page  +  1
-              res.render('search', {menus, pages, first: 1, page, totalPage, nextPage,  keyword, name: condition, feedback})
+              nextPage = currentPage  +  1
+              res.render('search', {menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, name: condition, feedback})
             } else {
-              res.render('search', {menus, pages, first: 1, page, totalPage, keyword, name: condition, feedback})
+              res.render('search', {menus, pages, first: 1, currentPage, totalPage, keyword, name: condition, feedback})
             }
             break
           case totalPage:
-            previousPage = page  - 1
-            res.render('search', {menus, pages, end: 1, page, previousPage, totalPage, keyword, name: condition, feedback})
+            previousPage = currentPage - 1
+            res.render('search', {menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, name: condition, feedback})
             break
           default:
-            nextPage = page  + 1
-            previousPage = page  - 1
-            res.render('search', {menus, pages, middle: 1, page, previousPage, nextPage,totalPage, keyword, name: condition, feedback})
+            nextPage = currentPage + 1
+            previousPage = currentPage  - 1
+            res.render('search', {menus, pages, middle: 1, currentPage, previousPage, nextPage,totalPage, keyword, name: condition, feedback})
             break
         }
       })
@@ -346,28 +346,28 @@ function getRenderBySearchPaginator(res, condition, keyword, page, feedback) {
       .lean()
       .then(menus => {
         const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-        const pages =  getSearchPaginatorPages(menus, page, condition, keyword)
+        const pages =  getSearchPaginatorPages(menus, currentPage, condition, keyword)
         feedback = `發現:${menus.length}筆`
-        menus = getRenderByPage(menus, page )
+        menus = getRenderByPage(menus, currentPage)
         let previousPage, nextPage
         
-        switch (page) {
+        switch (currentPage) {
           case 1:
             if (totalPage > 1) {   //totalPage > 1, the nextPage will show
-              nextPage = page  +  1
-              res.render('search', {menus, pages, first: 1, page, nextPage, totalPage, keyword, category: condition, feedback})
+              nextPage = currentPage  +  1
+              res.render('search', {menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, category: condition, feedback})
             } else {
-              res.render('search', {menus, pages, first: 1, page, totalPage, keyword, category: condition, feedback})
+              res.render('search', {menus, pages, first: 1, currentPage, totalPage, keyword, category: condition, feedback})
             }
             break
           case totalPage:
-            previousPage = page  - 1
-            res.render('search', {menus, pages, end: 1, page, previousPage, totalPage, keyword, category: condition, feedback})
+            previousPage = currentPage  - 1
+            res.render('search', {menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, category: condition, feedback})
             break
           default:
-            nextPage = page  + 1
-            previousPage = page  - 1
-            res.render('search', {menus, pages, middle: 1, page, previousPage, nextPage, totalPage, keyword, category: condition, feedback})
+            nextPage = currentPage + 1
+            previousPage = currentPage  - 1
+            res.render('search', {menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, category: condition, feedback})
             break
         }
       })

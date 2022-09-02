@@ -1,7 +1,7 @@
 const ratingSort = document.querySelector('#rating-sort')
 const dataPanel = document.querySelector('#data-panel')
 const menus = document.querySelectorAll('#menu')
-const page = document.querySelector('#page')   //current page
+const currentPage = document.querySelector('#current-page')   //current page
 const pagination = document.querySelectorAll('.page-item')
 const menuObject = []
 
@@ -21,7 +21,7 @@ try {
 
 /*show current page on pagination*/
 for (let i = 0; i < pagination.length; i++) {
-  if (pagination[i].innerText === page.textContent) {
+  if (pagination[i].innerText === currentPage.textContent) {
     pagination[i].classList.add('active')
   }
 }
