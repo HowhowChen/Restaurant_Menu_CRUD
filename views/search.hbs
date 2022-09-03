@@ -10,15 +10,14 @@
             <option value="name" {{#if name}}selected{{/if}}>餐廳名稱</option>
             <option value="category" {{#if category}}selected{{/if}}>餐廳種類</option>
           </select>
-          <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳名稱(e.g.梅子)、種類(e.g.美式)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
+          <input type="text" name="keyword" class="form-control" placeholder="名稱(梅子..)、種類(日式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
           <div class="input-group-append">
             <button class="btn btn-major" type="submit" id="search-button"><i class="fas fa-search"></i></button>
           </div>
         </div>
       </form>
-      <div class="d-flex justify-content-between text-decoration-none mt-3" >
+      <div class="d-flex justify-content-start text-decoration-none mt-3" >
         <span style="color: red">{{ feedback }}</span>
-        <a href="/restaurants/new"><button class="btn btn-primary">新增餐廳</button></a>
       </div>
       
     </div>
