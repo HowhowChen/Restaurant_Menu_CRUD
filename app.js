@@ -1,5 +1,6 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
+const methodOverride = require('method-override')
 const mongoose = require('mongoose')
 const Restaurant = require('./models/Restaurant')
 const app = express()
@@ -25,6 +26,8 @@ db.on('error', () => console.log('MongoDB Error'))
 
 db.once('open', () => console.log('MongoDB Connect'))
 
+//  use methodOverride
+app.use(methodOverride('_method'))
 
 //index
 app.get('/', (req, res) => {
@@ -201,7 +204,7 @@ app.get('/restaurants/:id/edit', (req, res) => {
 })
 
 // setting edit function
-app.post('/restaurants/:id/edit', (req, res) => {
+app.put('/restaurants/:id', (req, res) => {
   const id = req.params.id
   const newMenu = req.body
   const {name, name_en, category, image, location, phone, google_map, rating, description } = newMenu 
@@ -217,7 +220,7 @@ app.post('/restaurants/:id/edit', (req, res) => {
 
 
 //setting delete function
-app.post('/restaurants/:id/delete', (req, res) => {
+app.delete('/restaurants/:id', (req, res) => {
   const id = req.params.id
   return Restaurant.findById(id)
     .then(menu => menu.remove())
