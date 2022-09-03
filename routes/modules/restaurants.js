@@ -39,11 +39,11 @@ router.get('/:id/edit', (req, res) => {
 router.put('/:id', (req, res) => {
   const id = req.params.id
   const newMenu = req.body
-  const { name, name_en, category, image, location, phone, google_map, rating, description } = newMenu 
+  const { name, name_en, category, image, location, phone, google_map, rating, description } = newMenu
   return Restaurant.findById(id)
     .then(menu => {
-      [ menu.name, menu.name_en, menu.category, menu.image, menu.location, menu.phone, menu.google_map, menu.rating, menu.description ] = 
-      [ name, name_en, category, image,  location, phone, google_map, rating, description]      
+      [menu.name, menu.name_en, menu.category, menu.image, menu.location, menu.phone, menu.google_map, menu.rating, menu.description] =
+      [name, name_en, category, image, location, phone, google_map, rating, description]
       return menu.save()
     })
     .then(() => res.redirect(`/restaurants/${id}`))
