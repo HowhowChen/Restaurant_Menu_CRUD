@@ -7,8 +7,15 @@
         <div class="input-group">
           <select class="rounded bg-light" name="condition">
             <option selected>搜尋條件</option>
-            <option value="name" {{#if name}}selected{{/if}}>餐廳名稱</option>
-            <option value="category" {{#if category}}selected{{/if}}>餐廳種類</option>
+            <option value="name">餐廳名稱</option>
+            <option value="category">餐廳種類</option>
+          </select>
+          <select class="rounded bg-light" name="sort">
+            <option selected>排序方式</option>
+            <option value="category">類別</option>
+            <option value="location">地區</option>
+            <option value="ratingUp">🌟大到小</option>
+            <option value="ratingDown">🌟小到大</option>
           </select>
           <input type="text" name="keyword" class="form-control" placeholder="名稱(梅子..)、種類(日式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
           <div class="input-group-append">

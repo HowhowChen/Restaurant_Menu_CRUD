@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
     .catch(error => console.log(error))
 })
 
-//  setting index paginator function
+//  首頁分頁
 router.get('/index/:currentPage', (req, res) => {
   const currentPage = Number(req.params.currentPage)
   return Restaurant.find()
@@ -61,86 +61,88 @@ router.get('/search', (req, res) => {
   const condition = req.query.condition
   const keyword = req.query.keyword
   const currentPage = req.query.page
+  const sort = req.query.sort
   let feedback = ''
+  const conditionObj = {} //  搜尋條件物件
+  const sortObject = {} //  排序物件，用於前端顯示紀錄
+  const sortOpt = {} //  mongoose排序條件
+  const whereOpt = {} //  mongoose搜尋條件
+
+  //  根據排序名稱，選定mongoose排序條件、排序物件
+  switch (sort) {
+    case 'category': 
+      sortOpt.category = 1
+      sortObject.category = sort
+      break
+    case 'location':
+      sortOpt.location = 1
+      sortObject.location = sort
+      break
+    case 'ratingUp':
+      sortOpt.rating = -1
+      sortObject.ratingUp = sort
+      break
+    case 'ratingDown':
+      sortOpt.rating = 1
+      sortObject.ratingDown = sort
+      break
+  }
+
+  //  根據搜尋條件，選定mongoose搜尋條件
+  switch (condition) {
+    case 'name':
+      conditionObj.name = condition 
+      whereOpt.name = { $regex: keyword, $options: '$i' }
+      break
+    case 'category':
+      conditionObj.category = condition 
+      whereOpt.category = { $regex: keyword, $options: '$i' }
+      break
+    default:
+      feedback = '請選擇條件!!!'
+      return res.render('search', { keyword, feedback, sortObject })
+  }
+
+  //  如果出現分頁
   if (currentPage !== undefined) {
-    return getRenderBySearchPaginator(res, condition, keyword, currentPage, feedback)
+    return getRenderBySearchPaginator(res, condition, keyword, currentPage, feedback, conditionObj, whereOpt, sortOpt, sortObject, sort)
   }
 
-  //  name
-  if (condition === 'name') {
-    // keyword equal empty
-    if (keyword.trim().length === 0) {
-      feedback = '請輸入關鍵字!'
-      return res.render('search', { keyword, feedback, name: condition })
-    }
+  //  如果關鍵字為空
+  if (keyword.trim().length === 0) {
+    feedback = '請輸入關鍵字!'
+    return res.render('search', { keyword, feedback, condition: conditionObj, sortObject })
+  }
 
-    return Restaurant.find({ name: { $regex: keyword, $options: '$i' } })
-      .lean()
-      .then(menus => {
-        if (menus.length !== 0) {
-          const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-          const pages = getSearchPaginatorPages(menus, 1, condition, keyword)
-          feedback = `發現:${menus.length}筆`
-          menus = getRenderByPage(menus)
-          switch (totalPage) {
-            case 1:
-              res.render('search', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, name: condition, feedback })
-              break
-            default:
-              res.render('search', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, name: condition, feedback })
-              break
-          }
-          //  return res.render('search', {menus, keyword, name: condition, feedback})
-        } else {
-          feedback = '未發現!!!'
-          return res.render('search', { keyword, name: condition, feedback })
+  return Restaurant.find(whereOpt)
+    .lean()
+    .sort(sortOpt)
+    .then(menus => {
+      if (menus.length !== 0) {
+        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+        const pages = getSearchPaginatorPages(menus, 1, condition, keyword, sort)
+        feedback = `發現:${menus.length}筆`
+        menus = getRenderByPage(menus)
+        switch (totalPage) {
+          case 1:
+            res.render('search', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            break
+          default:
+            res.render('search', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            break
         }
-      })
-      .catch(error => console.log(error))
-  }
-
-  //  category
-  if (condition === 'category') {
-    //  keyword equal empty
-    if (keyword.trim().length === 0) {
-      feedback = '請輸入關鍵字!'
-      return res.render('search', { keyword, feedback, category: condition })
-    }
-
-    return Restaurant.find({ category: { $regex: keyword, $options: '$i' } })
-      .lean()
-      .then(menus => {
-        if (menus.length !== 0) {
-          const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-          const pages = getSearchPaginatorPages(menus, 1, condition, keyword)
-          feedback = `發現:${menus.length}筆`
-          menus = getRenderByPage(menus)
-          switch (totalPage) {
-            case 1:
-              res.render('search', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, category: condition, feedback })
-              break
-            default:
-              res.render('search', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, category: condition, feedback })
-              break
-          }
-        } else {
-          feedback = '未發現!!!'
-          return res.render('search', { keyword, category: condition, feedback })
-        }
-      })
-      .catch(error => console.log(error))
-  }
-
-  //  condition is empty
-  feedback = '請選擇條件!!!'
-  res.render('search', { keyword, feedback })
+      } else {
+        feedback = '未發現!!!'
+        return res.render('search', { keyword, condition: conditionObj, feedback, sortObject })
+      }
+    })
+    .catch(error => console.log(error))
 })
 
-//  for render paginator
+//  組成首頁分頁導覽列
 function getPaginatorPages (menus, currentPage = 1) {
   const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
   const pages = []
-
   let startPage = 1
   let maxLastPage = totalPage
 
@@ -172,11 +174,10 @@ function getRenderByPage (menus, currentPage = 1) {
   return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
 }
 
-//  for render paginator by search
-function getSearchPaginatorPages (menus, currentPage, condition, keyword) {
+//  組成搜尋分頁導覽列
+function getSearchPaginatorPages (menus, currentPage, condition, keyword, sort) {
   const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
   const pages = []
-
   let startPage = 1
   let maxLastPage = totalPage
 
@@ -200,78 +201,46 @@ function getSearchPaginatorPages (menus, currentPage, condition, keyword) {
     pages.push({
       page: i,
       condition,
-      keyword
+      keyword,
+      sort
     })
   }
   return pages
 }
 
-function getRenderBySearchPaginator (res, condition, keyword, currentPage, feedback) {
+//  搜尋分頁
+function getRenderBySearchPaginator (res, condition, keyword, currentPage, feedback, conditionObj, whereOpt, sortOpt, sortObject, sort) {
   currentPage = Number(currentPage)
-  //  condition  = name
-  if (condition === 'name') {
-    return Restaurant.find({ name: { $regex: keyword, $options: '$i' } })
-      .lean()
-      .then(menus => {
-        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-        const pages = getSearchPaginatorPages(menus, currentPage, condition, keyword)
-        feedback = `發現:${menus.length}筆`
-        menus = getRenderByPage(menus, currentPage)
-        let previousPage, nextPage
-        switch (currentPage) {
-          case 1:
-            if (totalPage > 1) { //  totalPage > 1, the nextPage will show
-              nextPage = currentPage + 1
-              res.render('search', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, name: condition, feedback })
-            } else {
-              res.render('search', { menus, pages, first: 1, currentPage, totalPage, keyword, name: condition, feedback })
-            }
-            break
-          case totalPage:
-            previousPage = currentPage - 1
-            res.render('search', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, name: condition, feedback })
-            break
-          default:
+  return Restaurant.find(whereOpt)
+    .lean()
+    .sort(sortOpt)
+    .then(menus => {
+      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
+      const pages = getSearchPaginatorPages(menus, currentPage, condition, keyword, sort)
+      feedback = `發現:${menus.length}筆`
+      menus = getRenderByPage(menus, currentPage)
+      let previousPage, nextPage
+      switch (currentPage) {
+        case 1:
+          if (totalPage > 1) { //  totalPage > 1, the nextPage will show
             nextPage = currentPage + 1
-            previousPage = currentPage - 1
-            res.render('search', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, name: condition, feedback })
-            break
-        }
-      })
-      .catch(error => console.log(error))
-  }
-
-  if (condition === 'category') {
-    return Restaurant.find({ category: { $regex: keyword, $options: '$i' } })
-      .lean()
-      .then(menus => {
-        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-        const pages = getSearchPaginatorPages(menus, currentPage, condition, keyword)
-        feedback = `發現:${menus.length}筆`
-        menus = getRenderByPage(menus, currentPage)
-        let previousPage, nextPage
-        switch (currentPage) {
-          case 1:
-            if (totalPage > 1) { // totalPage > 1, the nextPage will show
-              nextPage = currentPage + 1
-              res.render('search', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, category: condition, feedback })
-            } else {
-              res.render('search', { menus, pages, first: 1, currentPage, totalPage, keyword, category: condition, feedback })
-            }
-            break
-          case totalPage:
-            previousPage = currentPage - 1
-            res.render('search', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, category: condition, feedback })
-            break
-          default:
-            nextPage = currentPage + 1
-            previousPage = currentPage - 1
-            res.render('search', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, category: condition, feedback })
-            break
-        }
-      })
-      .catch(error => console.log(error))
-  }
+            res.render('search', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          } else {
+            res.render('search', { menus, pages, first: 1, currentPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          }
+          break
+        case totalPage:
+          previousPage = currentPage - 1
+          res.render('search', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          break
+        default:
+          nextPage = currentPage + 1
+          previousPage = currentPage - 1
+          res.render('search', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          break
+      }
+    })
+    .catch(error => console.log(error))
 }
 
 module.exports = router

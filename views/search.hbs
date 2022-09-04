@@ -7,8 +7,15 @@
         <div class="input-group">
           <select class="rounded bg-light" name="condition">
             <option selected>搜尋條件</option>
-            <option value="name" {{#if name}}selected{{/if}}>餐廳名稱</option>
-            <option value="category" {{#if category}}selected{{/if}}>餐廳種類</option>
+            <option value="name" {{#if condition.name}}selected{{/if}}>餐廳名稱</option>
+            <option value="category" {{#if condition.category}}selected{{/if}}>餐廳種類</option>
+          </select>
+          <select class="rounded bg-light" name="sort">
+            <option value="" selected>排序方式</option>
+            <option value="category" {{#if sortObject.category}}selected{{/if}}>類別</option>
+            <option value="location" {{#if sortObject.location}}selected{{/if}}>地區</option>
+            <option value="ratingUp" {{#if sortObject.ratingUp}}selected{{/if}}>🌟大到小</option>
+            <option value="ratingDown" {{#if sortObject.ratingDown}}selected{{/if}}>🌟小到大</option>
           </select>
           <input type="text" name="keyword" class="form-control" placeholder="名稱(梅子..)、種類(日式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
           <div class="input-group-append">
@@ -61,7 +68,7 @@
           <div class="card-footer d-flex justify-content-end flex-wrap">
             <a href="/restaurants/{{this._id}}/edit"><button class="btn btn-link btn-sm text-decoration-none">Edit</button></a>
             <a href="/restaurants/{{this._id}}"><button class="btn btn-link btn-sm text-decoration-none">Details</button></a>
-            <form action="restaurants/{{this._id}}/delete" method="POST">
+            <form action="restaurants/{{this._id}}?_method=Delete" method="POST">
               <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>
           </div>
@@ -78,15 +85,15 @@
        
         {{#each pages}}
         <li class="page-item">
-          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+          <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
         </li>
         {{/each}}
         
         <!--only totalPage more than one, the button will show-->
         {{#if nextPage}}   
         <li class="page-item">
-          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>  
         {{/if}}
 
@@ -96,19 +103,19 @@
       {{#if middle}}
 
         <li class="page-item">
-          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
 
         {{#each pages}}
         <li class="page-item">
-          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+          <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
         </li>
         {{/each}}
 
         <li class="page-item">
-          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>
  
       {{/if}}
@@ -117,13 +124,13 @@
       {{#if end}}
 
         <li class="page-item">
-          {{#if name}}<a class="page-link" href="/search?condition={{name}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
-          {{#if category}}<a class="page-link" href="/search?condition={{category}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
 
         {{#each pages}}
         <li class="page-item">
-          <a class="page-link" href="/search?condition={{this.condition}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+          <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
         </li>
         {{/each}}
 
