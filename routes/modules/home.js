@@ -51,7 +51,7 @@ router.get('/index/:currentPage', (req, res) => {
           previousPage = currentPage - 1
           res.render('index', { menus, pages, middle: 1, previousPage, nextPage, currentPage, totalPage })
           break
-      }  
+      }
     })
     .catch(error => console.log(error))
 })
@@ -70,7 +70,7 @@ router.get('/search', (req, res) => {
 
   //  根據排序名稱，選定mongoose排序條件、排序物件
   switch (sort) {
-    case 'category': 
+    case 'category':
       sortOpt.category = 1
       sortObject.category = sort
       break
@@ -91,11 +91,11 @@ router.get('/search', (req, res) => {
   //  根據搜尋條件，選定mongoose搜尋條件
   switch (condition) {
     case 'name':
-      conditionObj.name = condition 
+      conditionObj.name = condition
       whereOpt.name = { $regex: keyword, $options: '$i' }
       break
     case 'category':
-      conditionObj.category = condition 
+      conditionObj.category = condition
       whereOpt.category = { $regex: keyword, $options: '$i' }
       break
     default:
