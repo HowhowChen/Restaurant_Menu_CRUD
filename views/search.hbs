@@ -4,23 +4,35 @@
     <div class="search-bar-inner">
       <form action="/search">
         <h4 class="mb-2" id="temp">尋找餐廳：</h4>
-        <div class="input-group">
-          <select class="rounded bg-light" name="condition">
-            <option selected>搜尋條件</option>
-            <option value="name" {{#if condition.name}}selected{{/if}}>餐廳名稱</option>
-            <option value="category" {{#if condition.category}}selected{{/if}}>餐廳種類</option>
-          </select>
-          <select class="rounded bg-light" name="sort">
+        <div class="row">
+
+          <div class="col-sm-6">
+            <div class="input-group">
+              <input type="text" name="keyword" class="form-control" placeholder="餐廳名稱(牛排..)、餐廳種類(美式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
+              <div class="input-group-append">
+                <button class="btn btn-major" type="submit" id="search-button"><i class="fas fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-3">
+            <select class="rounded bg-light form-select" name="condition">
+              <option selected>搜尋條件</option>
+              <option value="name" {{#if condition.name}}selected{{/if}}>餐廳名稱</option>
+              <option value="category" {{#if condition.category}}selected{{/if}}>餐廳種類</option>
+            </select>
+          </div>
+
+          <div class="col-sm-3">
+            <select class="rounded bg-light form-select" name="sort">
             <option value="" selected>排序方式</option>
             <option value="category" {{#if sortObject.category}}selected{{/if}}>類別</option>
             <option value="location" {{#if sortObject.location}}selected{{/if}}>地區</option>
             <option value="ratingUp" {{#if sortObject.ratingUp}}selected{{/if}}>🌟大到小</option>
             <option value="ratingDown" {{#if sortObject.ratingDown}}selected{{/if}}>🌟小到大</option>
           </select>
-          <input type="text" name="keyword" class="form-control" placeholder="名稱(梅子..)、種類(日式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
-          <div class="input-group-append">
-            <button class="btn btn-major" type="submit" id="search-button"><i class="fas fa-search"></i></button>
           </div>
+
         </div>
       </form>
       <div class="d-flex justify-content-start text-decoration-none mt-3" >
