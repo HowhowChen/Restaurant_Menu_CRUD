@@ -5,6 +5,7 @@
 1. 該專案提供餐廳查詢服務，俾利使用者能以最短的時間找出評價高的美食。
 2. 新增CRUD功能，使用者能自由新增、刪除及修改餐廳資料。
 3. 導入分頁功能，優化使用者瀏覽餐廳資料。
+4. 新增排序功能，給使用者更多瀏覽餐廳資料的選擇。
 
 ## 功能列表
 
@@ -41,19 +42,26 @@
   * 每頁顯示12筆餐廳，超過即換頁顯示
   * 分頁導覽列最多一次顯示五頁
   
-
+* 排序功能
+  * 類別
+  * 地區
+  * 評價由高到低(🌟大到小)
+  * 評價由低到高(🌟小到大)
 
 ## 畫面預覽
-![indexPage](https://user-images.githubusercontent.com/106914854/188093079-ea306de8-c35f-4e1d-9eaa-2649e54a13ed.PNG)
+
+![indexPage](https://user-images.githubusercontent.com/106914854/188488364-0b9f4aeb-512b-4ae9-8262-edb8840de0b4.PNG)
 
 ---
 ![createForm](https://user-images.githubusercontent.com/106914854/188093092-38dee6a6-2089-461f-a954-ddc08a258c5b.PNG)
 
 ---
-![Pagination](https://user-images.githubusercontent.com/106914854/188095318-da3de323-142b-434f-8a14-7fd99c8b5926.PNG)
+![searchPage](https://user-images.githubusercontent.com/106914854/188488542-27dc8276-9a6a-44fe-8949-945336d89d80.PNG)
+
 
 ---
-![searchPagination](https://user-images.githubusercontent.com/106914854/188095876-1a2b20ca-fa4a-4f60-8302-9ce1ff8a5c96.PNG)
+
+![sortPage](https://user-images.githubusercontent.com/106914854/188489814-33790423-501e-4022-b360-d6f0f713e16f.PNG)
 
 
 
