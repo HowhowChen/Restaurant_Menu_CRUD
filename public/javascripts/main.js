@@ -9,11 +9,7 @@ const menuObject = []
 try {
   ratingSort.addEventListener('change', event => {
     const value = event.target.value
-    if (value === 'up') {
-      sortUpToDown()
-    } else if (value === 'down') {
-      sortDownToUp()
-    }
+    sortMenusByRating(value)
   })
 } catch {}
 
@@ -24,37 +20,23 @@ for (let i = 0; i < pagination.length; i++) {
   }
 }
 
-/* 高 -> 低 */
-function sortUpToDown () {
+/* 排序 */
+function sortMenusByRating (value) {
   for (let i = 0; i < menus.length; i++) {
     menuObject.push({
-      rating: menus[i].dataset.id,
+      rating: menus[i].dataset.rating,
       html: menus[i]
     })
   }
 
-  /* 高 -> 低 */
+  /* 內建sort方法 */
   menuObject.sort((a, b) => {
-    return b.rating - a.rating
-  })
-
-  menuObject.forEach(item => {
-    dataPanel.appendChild(item.html)
-  })
-}
-
-/* 低 -> 高 */
-function sortDownToUp () {
-  for (let i = 0; i < menus.length; i++) {
-    menuObject.push({
-      rating: menus[i].dataset.id,
-      html: menus[i]
-    })
-  }
-
-  /* 低 -> 高 */
-  menuObject.sort((a, b) => {
-    return a.rating - b.rating
+    switch (value) {
+      case 'up': //  高 -> 低
+        return b.rating - a.rating
+      case 'down': //  低 -> 高
+        return a.rating - b.rating
+    }
   })
 
   menuObject.forEach(item => {
