@@ -100,7 +100,7 @@ router.get('/search', (req, res) => {
       break
     default:
       feedback = '請選擇條件!!!'
-      return res.render('search', { keyword, feedback, sortObject })
+      return res.render('index', { keyword, feedback, sortObject })
   }
 
   //  如果出現分頁
@@ -111,7 +111,7 @@ router.get('/search', (req, res) => {
   //  如果關鍵字為空
   if (keyword.trim().length === 0) {
     feedback = '請輸入關鍵字!'
-    return res.render('search', { keyword, feedback, condition: conditionObj, sortObject })
+    return res.render('index', { keyword, feedback, condition: conditionObj, sortObject })
   }
 
   return Restaurant.find(whereOpt)
