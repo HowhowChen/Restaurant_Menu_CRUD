@@ -18,23 +18,28 @@
           <div class="col-sm-3">
             <select class="rounded bg-light form-select" name="condition">
               <option selected>搜尋條件</option>
-              <option value="name">餐廳名稱</option>
-              <option value="category">餐廳種類</option>
+              <option value="name" {{#if condition.name}}selected{{/if}}>餐廳名稱</option>
+              <option value="category" {{#if condition.category}}selected{{/if}}>餐廳種類</option>
             </select>
           </div>
 
           <div class="col-sm-3">
             <select class="rounded bg-light form-select" name="sort">
-              <option selected>排序方式</option>
-              <option value="category">類別</option>
-              <option value="location">地區</option>
-              <option value="ratingUp">🌟大到小</option>
-              <option value="ratingDown">🌟小到大</option>
-            </select>
+            <option value="" selected>排序方式</option>
+            <option value="category" {{#if sortObject.category}}selected{{/if}}>類別</option>
+            <option value="location" {{#if sortObject.location}}selected{{/if}}>地區</option>
+            <option value="ratingUp" {{#if sortObject.ratingUp}}selected{{/if}}>🌟大到小</option>
+            <option value="ratingDown" {{#if sortObject.ratingDown}}selected{{/if}}>🌟小到大</option>
+          </select>
           </div>
 
-        </div> 
-      </form>   
+        </div>
+      </form>
+      
+      <div class="d-flex justify-content-start text-decoration-none mt-3" >
+        <span style="color: red">{{ feedback }}</span>
+      </div>
+      
     </div>
   </div>
 </div>
@@ -57,7 +62,7 @@
 
   <div class="row" id="data-panel">
     {{#each menus}}
-    <div class="col-sm-4 menu" data-rating="{{this.rating}}">
+    <div class="col-sm-4 menu"  data-rating="{{this.rating}}">
         <div class="card mb-3">
           <img class="card-img-top" src="{{this.image}}" alt="{{this.name}}">
           <div class="card-body p-3">
@@ -88,42 +93,104 @@
 
   <nav aria-label="..." class="d-flex justify-content-center">
     <ul class="pagination">
+      <!--首頁-->
       {{#if first}}
-        {{#each pages}}
+
+        <!--index page-->
+        {{#if index}}
+          {{#each pages}}
+            <li class="page-item">
+              <a class="page-link" href="/index/{{this}}">{{this}}</a>
+            </li>
+          {{/each}}
+        {{/if}}
+
+        <!--search page-->
+        {{#if condition}}
+          {{#each pages}}
+            <li class="page-item">
+              <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+            </li>
+          {{/each}}
+        {{/if}}
+
+        <!--next arrow-->
+        <!--only totalPage more than one, the button will show-->
+        {{#if nextPage}}   
         <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-        {{#if nextPage}}   <!--only totalPage more than one, the button will show-->
-        <li class="page-item">
-          <a class="page-link" href="/index/{{nextPage}}">Next</a>
+          {{#if index}}<a class="page-link" href="/index/{{nextPage}}">Next</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>  
         {{/if}}
+
       {{/if}}
 
+      <!--中間頁-->
       {{#if middle}}
+        
+        <!--previous arrow-->
         <li class="page-item">
-          <a class="page-link" href="/index/{{previousPage}}">Previous</a>
+          {{#if index}}<a class="page-link" href="/index/{{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
-       {{#each pages}}
+
+        <!--index page-->
+        {{#if index}}
+          {{#each pages}}
+            <li class="page-item">
+              <a class="page-link" href="/index/{{this}}">{{this}}</a>
+            </li>
+          {{/each}}
+        {{/if}}
+
+        <!--search page-->
+        {{#if condition}}
+          {{#each pages}}
+          <li class="page-item">
+            <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+          </li>
+          {{/each}}
+        {{/if}}
+
+        <!--next arrow-->
         <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
+          {{#if index}}<a class="page-link" href="/index/{{nextPage}}">Next</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{nextPage}}">Next</a>{{/if}}
         </li>
-        {{/each}}
-        <li class="page-item">
-          <a class="page-link" href="/index/{{nextPage}}">Next</a>
-        </li> 
+ 
       {{/if}}
 
+      <!--末頁-->
       {{#if end}}
+        
+        <!--previous arrow-->
         <li class="page-item">
-          <a class="page-link" href="/index/{{previousPage}}">Previous</a>
+          {{#if index}}<a class="page-link" href="/index/{{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.name}}<a class="page-link" href="/search?condition={{condition.name}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
+          {{#if condition.category}}<a class="page-link" href="/search?condition={{condition.category}}&sort={{sort}}&keyword={{keyword}}&page={{previousPage}}">Previous</a>{{/if}}
         </li>
-        {{#each pages}}
-        <li class="page-item">
-          <a class="page-link" href="/index/{{this}}">{{this}}</a>
-        </li>
-        {{/each}} 
+        
+        <!--index page-->
+        {{#if index}}
+          {{#each pages}}
+            <li class="page-item">
+              <a class="page-link" href="/index/{{this}}">{{this}}</a>
+            </li>
+          {{/each}} 
+        {{/if}}
+
+        <!--search page-->
+        {{#if condition}}
+          {{#each pages}}
+            <li class="page-item">
+              <a class="page-link" href="/search?condition={{this.condition}}&sort={{sort}}&keyword={{this.keyword}}&page={{this.page}}">{{this.page}}</a>
+            </li>
+          {{/each}}
+        {{/if}}
+
       {{/if}}
     </ul>
   </nav>

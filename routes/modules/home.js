@@ -13,10 +13,10 @@ router.get('/', (req, res) => {
       menus = getRenderByPage(menus)
       switch (totalPage) {
         case 1:
-          res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage })
+          res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, index: 1 })
           break
         default: //  totalPage > 1, the nextPage will show
-          res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage })
+          res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, index: 1 })
           break
       }
     })
@@ -37,19 +37,19 @@ router.get('/index/:currentPage', (req, res) => {
         case 1: //  首頁
           if (totalPage > 1) { //  totalPage > 1, the nextPage will show
             nextPage = currentPage + 1
-            res.render('index', { menus, pages, first: 1, nextPage, currentPage, totalPage })
+            res.render('index', { menus, pages, first: 1, nextPage, currentPage, totalPage, index: 1 })
           } else {
-            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage })
+            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, index: 1 })
           }
           break
         case totalPage: //  最後一頁
           previousPage = currentPage - 1
-          res.render('index', { menus, pages, end: 1, previousPage, currentPage, totalPage })
+          res.render('index', { menus, pages, end: 1, previousPage, currentPage, totalPage, index: 1 })
           break
         default: //  中間的部分
           nextPage = currentPage + 1
           previousPage = currentPage - 1
-          res.render('index', { menus, pages, middle: 1, previousPage, nextPage, currentPage, totalPage })
+          res.render('index', { menus, pages, middle: 1, previousPage, nextPage, currentPage, totalPage, index: 1 })
           break
       }
     })
@@ -125,15 +125,15 @@ router.get('/search', (req, res) => {
         menus = getRenderByPage(menus)
         switch (totalPage) {
           case 1:
-            res.render('search', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
             break
           default:
-            res.render('search', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
             break
         }
       } else {
         feedback = '未發現!!!'
-        return res.render('search', { keyword, condition: conditionObj, feedback, sortObject })
+        return res.render('index', { keyword, condition: conditionObj, feedback, sortObject })
       }
     })
     .catch(error => console.log(error))
@@ -224,19 +224,19 @@ function getRenderBySearchPaginator (res, condition, keyword, currentPage, feedb
         case 1:
           if (totalPage > 1) { //  totalPage > 1, the nextPage will show
             nextPage = currentPage + 1
-            res.render('search', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            res.render('index', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
           } else {
-            res.render('search', { menus, pages, first: 1, currentPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+            res.render('index', { menus, pages, first: 1, currentPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
           }
           break
         case totalPage:
           previousPage = currentPage - 1
-          res.render('search', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          res.render('index', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
           break
         default:
           nextPage = currentPage + 1
           previousPage = currentPage - 1
-          res.render('search', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
+          res.render('index', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
           break
       }
     })
