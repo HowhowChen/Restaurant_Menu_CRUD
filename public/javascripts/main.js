@@ -1,6 +1,6 @@
 const ratingSort = document.querySelector('#rating-sort')
 const dataPanel = document.querySelector('#data-panel')
-const menus = document.querySelectorAll('#menu')
+const menus = document.querySelectorAll('.menu')
 const currentPage = document.querySelector('#current-page')// current page
 const pagination = document.querySelectorAll('.page-item')
 const menuObject = []
