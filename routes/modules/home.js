@@ -5,7 +5,8 @@ const PER_PAGE_MENU = 12
 
 //  index
 router.get('/', (req, res) => {
-  return Restaurant.find()
+  const userId = req.user._id
+  return Restaurant.find({ userId })
     .lean()
     .then(menus => {
       const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
@@ -26,7 +27,8 @@ router.get('/', (req, res) => {
 //  首頁分頁
 router.get('/index/:currentPage', (req, res) => {
   const currentPage = Number(req.params.currentPage)
-  return Restaurant.find()
+  const userId = req.user._id
+  return Restaurant.find({ userId })
     .lean()
     .then(menus => {
       const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
@@ -58,6 +60,7 @@ router.get('/index/:currentPage', (req, res) => {
 
 //  setting search function
 router.get('/search', (req, res) => {
+  const userId = req.user._id
   const condition = req.query.condition
   const keyword = req.query.keyword
   const currentPage = req.query.page
@@ -93,10 +96,12 @@ router.get('/search', (req, res) => {
     case 'name':
       conditionObj.name = condition
       whereOpt.name = { $regex: keyword, $options: '$i' }
+      whereOpt.userId = userId
       break
     case 'category':
       conditionObj.category = condition
       whereOpt.category = { $regex: keyword, $options: '$i' }
+      whereOpt.userId = userId
       break
     default:
       feedback = '請選擇條件!!!'
