@@ -2,10 +2,14 @@
 <div class="container search-bar">
   <div class="search-bar-outer">
     <div class="search-bar-inner">
-      <form action="/search">
-        <h4 class="mb-2" id="temp">尋找餐廳：</h4>
-        <div class="row">
 
+      <div class="d-flex justify-content-between">
+        <h4 class="mb-2" id="temp">尋找餐廳：</h4>
+        <a href="/restaurants/new"><button class="btn btn-outline-primary mb-3">新增餐廳</button></a>
+      </div>
+
+      <form action="/search">
+        <div class="row">
           <div class="col-sm-6">
             <div class="input-group">
               <input type="text" name="keyword" class="form-control" placeholder="餐廳名稱(牛排..)、餐廳種類(美式..)" aria-label="Restaurant Name..." value="{{keyword}}" aria-describedby="search-button">
