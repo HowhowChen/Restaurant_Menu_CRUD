@@ -13,7 +13,7 @@ db.once('open', () => {
   Promise.all(userList.map(async user => {
     const { email, password, restaurantIndex } = user
     await bcrypt
-    .genSalt(10)
+      .genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => User.create({
         email,
