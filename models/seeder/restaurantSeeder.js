@@ -2,35 +2,39 @@ const bcrypt = require('bcryptjs')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
 }
-const Restaurant = require('../Restaurant')
-const restaurantList = require('../../restaurant.json')
+
+const restaurantList = require('./restaurantList.json').results
+const userList = require('./userList.json').users
 const db = require('../../config/mongoose')
+const Restaurant = require('../Restaurant')
 const User = require('../user')
-const SEED_USER = {
-  name: 'root',
-  email: 'root@example',
-  password: '12345678'
-}
 
 db.once('open', () => {
-  bcrypt
+  Promise.all(userList.map(async user => {
+    const { email, password, restaurantIndex } = user
+    await bcrypt
     .genSalt(10)
-    .then(salt => bcrypt.hash(SEED_USER.password, salt))
-    .then(hash => User.create({
-      name: SEED_USER.name,
-      email: SEED_USER.email,
-      password: hash
-    }))
-    .then(async user => {
-      const userId = user._id
-      const restaurantArr = restaurantList.results
-      await Promise.all(restaurantArr.map(restaurant => {
-        restaurant.userId = userId
-        return Restaurant.create(restaurant)
+      .then(salt => bcrypt.hash(password, salt))
+      .then(hash => User.create({
+        email,
+        password: hash
       }))
-    })
-    .then(() => {
-      console.log('done')
-      process.exit()
-    })
+      .then(user => {
+        const restaurants = restaurantIndex.map(index => {
+          const restaurants = restaurantList[index]
+          restaurants.userId = user._id
+          return restaurants
+        })
+        return Restaurant.create(restaurants)
+      })
+  }))
+  .then(() => {
+    console.log('finish seeds and close db connect')
+    db.close()
+  })
+  .catch(error => console.log(error))
+  .finally(() => {
+    console.log('shut down process')
+    process.exit()
+  })
 })
