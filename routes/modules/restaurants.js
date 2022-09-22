@@ -2,19 +2,33 @@ const express = require('express')
 const router = express.Router()
 const Restaurant = require('../../models/Restaurant')
 
-
 //  create page
 router.get('/new', (req, res) => {
   res.render('new')
 })
 
 //  setting create function
-router.post('/new', (req, res, next) => {
+router.post('/new', async (req, res, next) => {
   const userId = req.user._id
   const menu = req.body
+  const { image, google_map, rating } = menu
   menu.userId = userId
-  if (Number(menu.rating) % 1 !== 0) {
-    menu.rating = Number(menu.rating).toFixed(1)  // 小數點後1位
+  
+  //  判斷圖片格式
+  switch (image.slice(-3)) {
+    case 'png':
+      break
+    case 'jpg':
+      break
+    default:
+      const err = 'image format is error'
+      req.flash('error', err)
+      return next(err)
+  }
+
+  //  預防rating 遭暴力攻擊
+  if (Number(rating) % 1 !== 0) {
+    menu.rating = Number(rating).toFixed(1)  // 小數點後1位
   }
 
   return Restaurant.create(menu)
