@@ -11,7 +11,7 @@ router.get('/new', (req, res) => {
 router.post('/new', async (req, res, next) => {
   const userId = req.user._id
   const menu = req.body
-  const { image, google_map, rating } = menu
+  const { image, rating } = menu
   menu.userId = userId
   
   //  判斷圖片格式
@@ -35,6 +35,7 @@ router.post('/new', async (req, res, next) => {
     .then(() => res.redirect('/'))
     .catch(err => {
       console.log(err)
+      req.flash('error', err.message)
       next(err)
     })
 })
@@ -50,6 +51,7 @@ router.get('/:id', (req, res, next) => {
     })
     .catch(err => {
       console.log(err)
+      req.flash('error', err.message)
       next(err)
     })
 })
@@ -63,6 +65,7 @@ router.get('/:id/edit', (req, res, next) => {
     .then(menu => res.render('edit', { menu }))
     .catch(err => {
       console.log(err)
+      req.flash('error', err.message)
       next(err)
     })
 })
@@ -82,6 +85,7 @@ router.put('/:id', (req, res, next) => {
     .then(() => res.redirect(`/restaurants/${_id}`))
     .catch(err => {
       console.log(err)
+      req.flash('error', err.message)
       next(err)
     })
 })
@@ -95,6 +99,7 @@ router.delete('/:id', (req, res, next) => {
     .then(() => res.redirect('/'))
     .catch(err => {
       console.log(err)
+      req.flash('error', err.message)
       next(err)
     })
 })
