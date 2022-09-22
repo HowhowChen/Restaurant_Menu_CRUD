@@ -2,24 +2,31 @@ const express = require('express')
 const router = express.Router()
 const Restaurant = require('../../models/Restaurant')
 
+
 //  create page
 router.get('/new', (req, res) => {
   res.render('new')
 })
 
 //  setting create function
-router.post('/new', (req, res) => {
+router.post('/new', (req, res, next) => {
   const userId = req.user._id
   const menu = req.body
   menu.userId = userId
+  if (Number(menu.rating) % 1 !== 0) {
+    menu.rating = Number(menu.rating).toFixed(1)  // 小數點後1位
+  }
 
   return Restaurant.create(menu)
     .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
+    .catch(err => {
+      console.log(err)
+      next(err)
+    })
 })
 
 //  setting read detail function
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   const userId = req.user._id
   const _id = req.params.id
   return Restaurant.findOne({ _id, userId })
@@ -27,21 +34,27 @@ router.get('/:id', (req, res) => {
     .then(menu => {
       res.render('show', { menu })
     })
-    .catch(error => console.log(error))
+    .catch(err => {
+      console.log(err)
+      next(err)
+    })
 })
 
 //  setting edit page
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', (req, res, next) => {
   const userId = req.user._id
   const _id = req.params.id
   return Restaurant.findOne({ _id, userId })
     .lean()
     .then(menu => res.render('edit', { menu }))
-    .catch(error => console.log(error))
+    .catch(err => {
+      console.log(err)
+      next(err)
+    })
 })
 
 //  setting edit function
-router.put('/:id', (req, res) => {
+router.put('/:id', (req, res, next) => {
   const userId = req.user._id
   const _id = req.params.id
   const newMenu = req.body
@@ -53,17 +66,23 @@ router.put('/:id', (req, res) => {
       return menu.save()
     })
     .then(() => res.redirect(`/restaurants/${_id}`))
-    .catch(error => console.log(error))
+    .catch(err => {
+      console.log(err)
+      next(err)
+    })
 })
 
 //  setting delete function
-router.delete('/:id', (req, res) => {
+router.delete('/:id', (req, res, next) => {
   const userId = req.user._id
   const _id = req.params.id
   return Restaurant.findOne({ _id, userId })
     .then(menu => menu.remove())
     .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
+    .catch(err => {
+      console.log(err)
+      next(err)
+    })
 })
 
 module.exports = router

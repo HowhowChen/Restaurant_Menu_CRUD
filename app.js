@@ -7,6 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
+const errorHandler = require('./middleware/errorHandler').errorHandler
 const routes = require('./routes')
 
 // 載入設定檔，要寫在 express-session 以後
@@ -54,6 +55,9 @@ app.use((req, res, next) => {
 
 //  將request 導入路由器
 app.use(routes)
+
+//  setting errorHandler
+app.use(errorHandler)
 
 //  setting listen
 app.listen(port, () => {
