@@ -1,21 +1,29 @@
 <h1 class="text-center text-secondary">新增餐廳</h1>
 <div class="container">
-  <form novalidate id="form" action="/restaurants/new" method="POST"> 
+  <form novalidate id="form" action="/restaurants/new" method="POST">
+
+    <div class="mt-3 text-danger text-center">
+      {{#each errors}}
+        {{ this.message }}
+        <br>
+      {{/each}} 
+    </div>
+    
     <div class="mb-3">
       <label for="name" class="form-label">店名</label>
-      <input id="name" name="name" type="text" class="form-control" placeholder="布娜飛比利時啤酒餐廳" required>
+      <input id="name" name="name" type="text" class="form-control" placeholder="布娜飛比利時啤酒餐廳" value="{{ menu.name }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
     </div>
     <div class="mb-3">
       <label for="name_en" class="form-label">英文店名</label>
-      <input id="name_en" name="name_en" type="text" class="form-control" placeholder="Bravo Beer" required>
+      <input id="name_en" name="name_en" type="text" class="form-control" placeholder="Bravo Beer" value="{{ menu.name_en }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
     </div>
     <div class="mb-3">
       <label for="category" class="form-label">種類</label>
-      <input id="category" name="category" list="categories" class="form-control" placeholder="義式餐廳" required>
+      <input id="category" name="category" list="categories" class="form-control" placeholder="義式餐廳" value="{{ menu.category }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
       <datalist id="categories">
@@ -27,37 +35,37 @@
     </div>
     <div class="mb-3">
       <label for="image" class="form-label">照片網址</label>
-      <input id="image" name="image" type="url" class="form-control" placeholder="https://assets-lighthouse.s3.amazonaws.com/uploads/image/file/5633/07.jpg" required>
+      <input id="image" name="image" type="url" class="form-control" placeholder="https://assets-lighthouse.s3.amazonaws.com/uploads/image/file/5633/07.jpg" value="{{ menu.image }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required http(s)://</div>
     </div>
     <div class="mb-3">
       <label for="location" class="form-label">地址</label>
-      <input id="location" name="location" type="text" class="form-control" placeholder="台北市中山區伊通街 33 號" required>
+      <input id="location" name="location" type="text" class="form-control" placeholder="台北市中山區伊通街 33 號" value="{{ menu.location }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
     </div>
     <div class="mb-3">
       <label for="phone" class="form-label">電話</label>
-      <input id="phone" name="phone" type="tel" class="form-control" placeholder="02 2507 0633" required>
+      <input id="phone" name="phone" type="tel" class="form-control" placeholder="02 2507 0633" value="{{ menu.phone }}" required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
     </div>
     <div class="mb-3">
       <label for="google_map" class="form-label">谷歌地圖連結</label>
-      <input id="google_map" name="google_map" type="url" class="form-control" placeholder="https://goo.gl/maps/Y1iyiSK7EeR2" required>
+      <input id="google_map" name="google_map" type="url" class="form-control" placeholder="https://goo.gl/maps/Y1iyiSK7EeR2" value="{{ menu.google_map }}"  required>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required http(s)://</div>
     </div>
     <div class="mb-3">
       <label for="rating" class="form-label">評分</label>
-      <input id="rating" name="rating" type="number" min="1" max="5" step="0.1" class="form-control" placeholder="4.5" required>  <!--step 每次增加或減少0.1-->
+      <input id="rating" name="rating" type="number" min="1" max="5" step="0.1" class="form-control" placeholder="4.5" value="{{ menu.rating }}" required>  <!--step 每次增加或減少0.1-->
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">only 1 ~ 5</div>
     </div> 
     <div class="mb-3">
       <label for="description" class="form-label">餐廳敘述</label>
-      <textarea id="description" name="description" class="form-control" placeholder="我們在乎每一位顧客、賣出去的每一滴.." required></textarea>
+      <textarea id="description" name="description" class="form-control" placeholder="我們在乎每一位顧客、賣出去的每一滴.." required>{{ menu.description }}</textarea>
       <div class="valid-feedback">Good!</div>
       <div class="invalid-feedback">This field is required</div>
     </div>

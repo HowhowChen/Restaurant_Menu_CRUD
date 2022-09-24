@@ -14,6 +14,7 @@ router.post('/new', async (req, res, next) => {
   const { image, rating } = menu
   menu.userId = userId
   
+  const errors = []
   //  判斷圖片格式
   switch (image.slice(-3)) {
     case 'png':
@@ -21,7 +22,14 @@ router.post('/new', async (req, res, next) => {
     case 'jpg':
       break
     default:
-      return next(err)
+      errors.push({
+        message: '圖片格式有誤!'
+      })
+  }
+
+  //  如果有錯誤
+  if (errors.length) {
+    return res.render('new', { menu, errors })
   }
   
   //  預防rating 遭暴力攻擊
