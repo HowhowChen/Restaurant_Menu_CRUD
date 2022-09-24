@@ -1,5 +1,6 @@
 const express = require('express')
 const session = require('express-session')
+const MongoStore = require('connect-mongo')
 const exphbs = require('express-handlebars')
 const methodOverride = require('method-override')
 const flash = require('connect-flash')
@@ -25,7 +26,14 @@ app.set('view engine', 'hbs')
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    touchAfter: 60 * 60 * 24 // 24 hours不刷新session,除修改外
+  }),
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+  }
 }))
 
 //  setting body parser
@@ -56,7 +64,7 @@ app.use((req, res, next) => {
 //  將request 導入路由器
 app.use(routes)
 
-//  setting errorHandler
+//  setting 500 error handling
 app.use(errorHandler)
 
 //  setting listen

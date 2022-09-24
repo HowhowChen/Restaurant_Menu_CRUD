@@ -21,11 +21,9 @@ router.post('/new', async (req, res, next) => {
     case 'jpg':
       break
     default:
-      const err = 'image format is error'
-      req.flash('error', err)
       return next(err)
   }
-
+  
   //  預防rating 遭暴力攻擊
   if (Number(rating) % 1 !== 0) {
     menu.rating = Number(rating).toFixed(1)  // 小數點後1位
@@ -33,11 +31,7 @@ router.post('/new', async (req, res, next) => {
 
   return Restaurant.create(menu)
     .then(() => res.redirect('/'))
-    .catch(err => {
-      console.log(err)
-      req.flash('error', err.message)
-      next(err)
-    })
+    .catch(err => next(err))
 })
 
 //  setting read detail function
@@ -49,11 +43,7 @@ router.get('/:id', (req, res, next) => {
     .then(menu => {
       res.render('show', { menu })
     })
-    .catch(err => {
-      console.log(err)
-      req.flash('error', err.message)
-      next(err)
-    })
+    .catch(err => next(err))
 })
 
 //  setting edit page
@@ -63,11 +53,7 @@ router.get('/:id/edit', (req, res, next) => {
   return Restaurant.findOne({ _id, userId })
     .lean()
     .then(menu => res.render('edit', { menu }))
-    .catch(err => {
-      console.log(err)
-      req.flash('error', err.message)
-      next(err)
-    })
+    .catch(err => next(err))
 })
 
 //  setting edit function
@@ -83,11 +69,7 @@ router.put('/:id', (req, res, next) => {
       return menu.save()
     })
     .then(() => res.redirect(`/restaurants/${_id}`))
-    .catch(err => {
-      console.log(err)
-      req.flash('error', err.message)
-      next(err)
-    })
+    .catch(err => next(err))
 })
 
 //  setting delete function
@@ -97,11 +79,7 @@ router.delete('/:id', (req, res, next) => {
   return Restaurant.findOne({ _id, userId })
     .then(menu => menu.remove())
     .then(() => res.redirect('/'))
-    .catch(err => {
-      console.log(err)
-      req.flash('error', err.message)
-      next(err)
-    })
+    .catch(err => next(err))
 })
 
 module.exports = router
