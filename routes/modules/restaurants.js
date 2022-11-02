@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Restaurant = require('../../models/Restaurant')
-const { imageUrlValidator } = require('../../helpers/validation-helpers')
+const { imageUrlValidator, ratingValidator } = require('../../helpers/validation-helpers')
 
 //  create page
 router.get('/new', (req, res) => {
@@ -17,8 +17,10 @@ router.post('/new', async (req, res, next) => {
   
   const errors = []
   //  imageUrl字串篩選
-  const isValidFormat = imageUrlValidator(image)
-  if (!isValidFormat) errors.push({ message: '圖片格式僅接受png、jpg、jpeg' })
+  if (!imageUrlValidator(image)) errors.push({ message: '圖片格式僅接受png、jpg、jpeg' })
+
+  // rating篩選
+  if (!ratingValidator(rating)) errors.push({ message: 'rating 範圍1~5，小數點取一位' })
 
   //  如果有錯誤
   if (errors.length) {
@@ -69,6 +71,9 @@ router.put('/:id', (req, res, next) => {
   const isValidFormat = imageUrlValidator(image)
   if (!isValidFormat) errors.push({ message: '圖片格式僅接受png、jpg、jpeg' })
 
+  // rating篩選
+  if (!ratingValidator(rating)) errors.push({ message: 'rating 範圍1~5，小數點取一位' })
+  
   //  如果有錯誤
   if (errors.length) {
     req.flash('errors', errors)

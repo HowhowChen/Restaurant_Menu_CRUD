@@ -7,6 +7,13 @@ function imageUrlValidator (image) {
   return isValidFormat
 }
 
+function ratingValidator (rating) {
+  const isValidRating = Number(rating) < 5 ? rating.match(/^[1-4]+(.[0-9]{1})?$/) : rating.match(/^[5]+(.[0]{1})?$/) 
+
+  return isValidRating
+}
+
 module.exports = {
-  imageUrlValidator
+  imageUrlValidator,
+  ratingValidator
 }
