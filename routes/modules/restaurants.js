@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Restaurant = require('../../models/Restaurant')
+const { imageUrlValidator } = require('../../helpers/validation-helpers')
 
 //  create page
 router.get('/new', (req, res) => {
@@ -15,17 +16,9 @@ router.post('/new', async (req, res, next) => {
   menu.userId = userId
   
   const errors = []
-  //  判斷圖片格式
-  switch (image.slice(-3)) {
-    case 'png':
-      break
-    case 'jpg':
-      break
-    default:
-      errors.push({
-        message: '圖片格式有誤!'
-      })
-  }
+  //  imageUrl字串篩選
+  const isValidFormat = imageUrlValidator(image)
+  if (!isValidFormat) errors.push({ message: '圖片格式僅接受png、jpg、jpeg' })
 
   //  如果有錯誤
   if (errors.length) {
@@ -70,6 +63,18 @@ router.put('/:id', (req, res, next) => {
   const _id = req.params.id
   const newMenu = req.body
   const { name, name_en, category, image, location, phone, google_map, rating, description } = newMenu
+
+  const errors = []
+  // imageUrl字串篩選
+  const isValidFormat = imageUrlValidator(image)
+  if (!isValidFormat) errors.push({ message: '圖片格式僅接受png、jpg、jpeg' })
+
+  //  如果有錯誤
+  if (errors.length) {
+    req.flash('errors', errors)
+    return res.redirect(`/restaurants/${_id}/edit`)
+  }
+
   return Restaurant.findOne({ _id, userId })
     .then(menu => {
       [menu.name, menu.name_en, menu.category, menu.image, menu.location, menu.phone, menu.google_map, menu.rating, menu.description] =
