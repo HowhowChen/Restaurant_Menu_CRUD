@@ -1,69 +1,51 @@
 const express = require('express')
 const router = express.Router()
 const Restaurant = require('../../models/Restaurant')
-const PER_PAGE_MENU = 12
+const { getRestaurantsPagination, getPaginatorPages, getOffset, PER_PAGE_MENU } = require('../../helpers/pagination-helpers')
 
-//  index
-router.get('/', (req, res) => {
+//  首頁
+router.get('/', async (req, res, next) => {
   const userId = req.user._id
+  const total = await Restaurant.countDocuments({ userId }).lean()
+  const offset = getOffset(PER_PAGE_MENU)
+  
   return Restaurant.find({ userId })
     .lean()
+    .limit(PER_PAGE_MENU)
+    .skip(offset)
     .then(menus => {
-      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-      const pages = getPaginatorPages(menus)
-      menus = getRenderByPage(menus)
-      switch (totalPage) {
-        case 1:
-          res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, index: 1 })
-          break
-        default: //  totalPage > 1, the nextPage will show
-          res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, index: 1 })
-          break
-      }
+      const totalPage = Math.ceil(total / PER_PAGE_MENU)
+      const pages = getPaginatorPages(totalPage)
+      getRestaurantsPagination(res, menus, pages, totalPage)
     })
-    .catch(error => console.log(error))
+    .catch(err => next(err))
 })
 
 //  首頁分頁
-router.get('/index/:currentPage', (req, res) => {
+router.get('/index/:currentPage', async (req, res, next) => {
   const currentPage = Number(req.params.currentPage)
   const userId = req.user._id
+  const total = await Restaurant.countDocuments({ userId }).lean()
+  const offset = getOffset(PER_PAGE_MENU, currentPage)
+
   return Restaurant.find({ userId })
     .lean()
+    .limit(PER_PAGE_MENU)
+    .skip(offset)
     .then(menus => {
-      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-      const pages = getPaginatorPages(menus, currentPage)
-      menus = getRenderByPage(menus, currentPage)
-      let previousPage, nextPage
-      switch (currentPage) {
-        case 1: //  首頁
-          if (totalPage > 1) { //  totalPage > 1, the nextPage will show
-            nextPage = currentPage + 1
-            res.render('index', { menus, pages, first: 1, nextPage, currentPage, totalPage, index: 1 })
-          } else {
-            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, index: 1 })
-          }
-          break
-        case totalPage: //  最後一頁
-          previousPage = currentPage - 1
-          res.render('index', { menus, pages, end: 1, previousPage, currentPage, totalPage, index: 1 })
-          break
-        default: //  中間的部分
-          nextPage = currentPage + 1
-          previousPage = currentPage - 1
-          res.render('index', { menus, pages, middle: 1, previousPage, nextPage, currentPage, totalPage, index: 1 })
-          break
-      }
+      const totalPage = Math.ceil(total / PER_PAGE_MENU)
+      const pages = getPaginatorPages(totalPage, currentPage)
+      getRestaurantsPagination(res, menus, pages, totalPage, currentPage)
     })
-    .catch(error => console.log(error))
+    .catch(err => next(err))
 })
 
-//  setting search function
-router.get('/search', (req, res) => {
+//  搜尋、搜尋分頁
+router.get('/search', async (req, res, next) => {
   const userId = req.user._id
   const condition = req.query.condition
   const keyword = req.query.keyword
-  const currentPage = req.query.page
+  const currentPage = req.query.page ? Number(req.query.page) : 1 // 沒有默認從第一頁開始
   const sort = req.query.sort
   let feedback = ''
   const conditionObj = {} //  搜尋條件物件
@@ -74,19 +56,19 @@ router.get('/search', (req, res) => {
   //  根據排序名稱，選定mongoose排序條件、排序物件
   switch (sort) {
     case 'category':
-      sortOpt.category = 1
+      sortOpt.category = 'desc'
       sortObject.category = sort
       break
     case 'location':
-      sortOpt.location = 1
+      sortOpt.location = 'desc'
       sortObject.location = sort
       break
     case 'ratingUp':
-      sortOpt.rating = -1
+      sortOpt.rating = 'desc'
       sortObject.ratingUp = sort
       break
     case 'ratingDown':
-      sortOpt.rating = 1
+      sortOpt.rating = 'asc'
       sortObject.ratingDown = sort
       break
   }
@@ -108,144 +90,32 @@ router.get('/search', (req, res) => {
       return res.render('index', { keyword, feedback, sortObject })
   }
 
-  //  如果出現分頁
-  if (currentPage !== undefined) {
-    return getRenderBySearchPaginator(res, condition, keyword, currentPage, feedback, conditionObj, whereOpt, sortOpt, sortObject, sort)
-  }
-
   //  如果關鍵字為空
   if (keyword.trim().length === 0) {
     feedback = '請輸入關鍵字!'
     return res.render('index', { keyword, feedback, condition: conditionObj, sortObject })
   }
 
+  const total = await Restaurant.countDocuments(whereOpt).lean()
+  const offset = getOffset(PER_PAGE_MENU, currentPage)
+
   return Restaurant.find(whereOpt)
     .lean()
     .sort(sortOpt)
+    .limit(PER_PAGE_MENU)
+    .skip(offset)
     .then(menus => {
       if (menus.length !== 0) {
-        const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-        const pages = getSearchPaginatorPages(menus, 1, condition, keyword, sort)
-        feedback = `發現:${menus.length}筆`
-        menus = getRenderByPage(menus)
-        switch (totalPage) {
-          case 1:
-            res.render('index', { menus, pages, first: 1, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-            break
-          default:
-            res.render('index', { menus, pages, first: 1, nextPage: 2, currentPage: 1, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-            break
-        }
+        const totalPage = Math.ceil(total / PER_PAGE_MENU)
+        const pages = getPaginatorPages(totalPage, currentPage, condition, keyword, sort)
+        feedback = `發現:${total}筆`
+        getRestaurantsPagination(res, menus, pages, totalPage, currentPage, keyword, sort, conditionObj, sortObject, feedback)
       } else {
         feedback = '未發現!!!'
         return res.render('index', { keyword, condition: conditionObj, feedback, sortObject })
       }
     })
-    .catch(error => console.log(error))
+    .catch(err => next(err))
 })
-
-//  組成首頁分頁導覽列
-function getPaginatorPages (menus, currentPage = 1) {
-  const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-  const pages = []
-  let startPage = 1
-  let maxLastPage = totalPage
-
-  if (totalPage > 5) {
-    if (currentPage <= 3) {
-      startPage = 1
-      maxLastPage = 5
-    } else if ((currentPage + 1) === totalPage) {
-      startPage = currentPage - 3
-      maxLastPage = currentPage + 1
-    } else if (currentPage === totalPage) {
-      startPage = currentPage - 4
-      maxLastPage = totalPage
-    } else if (currentPage > 3) {
-      startPage = currentPage - 2
-      maxLastPage = currentPage + 2
-    }
-  }
-
-  for (let i = startPage; i <= maxLastPage; i++) {
-    pages.push(i)
-  }
-  return pages
-}
-
-//  render msnus; default page = 1
-function getRenderByPage (menus, currentPage = 1) {
-  const startIndex = (currentPage - 1) * PER_PAGE_MENU
-  return menus.slice(startIndex, startIndex + PER_PAGE_MENU)
-}
-
-//  組成搜尋分頁導覽列
-function getSearchPaginatorPages (menus, currentPage, condition, keyword, sort) {
-  const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-  const pages = []
-  let startPage = 1
-  let maxLastPage = totalPage
-
-  if (totalPage > 5) {
-    if (currentPage <= 3) {
-      startPage = 1
-      maxLastPage = 5
-    } else if ((currentPage + 1) === totalPage) {
-      startPage = currentPage - 3
-      maxLastPage = currentPage + 1
-    } else if (currentPage === totalPage) {
-      startPage = currentPage - 4
-      maxLastPage = totalPage
-    } else if (currentPage > 3) {
-      startPage = currentPage - 2
-      maxLastPage = currentPage + 2
-    }
-  }
-
-  for (let i = startPage; i <= maxLastPage; i++) {
-    pages.push({
-      page: i,
-      condition,
-      keyword,
-      sort
-    })
-  }
-  return pages
-}
-
-//  搜尋分頁
-function getRenderBySearchPaginator (res, condition, keyword, currentPage, feedback, conditionObj, whereOpt, sortOpt, sortObject, sort) {
-  currentPage = Number(currentPage)
-  return Restaurant.find(whereOpt)
-    .lean()
-    .sort(sortOpt)
-    .then(menus => {
-      const totalPage = Math.ceil(menus.length / PER_PAGE_MENU)
-      const pages = getSearchPaginatorPages(menus, currentPage, condition, keyword, sort)
-      feedback = `發現:${menus.length}筆`
-      menus = getRenderByPage(menus, currentPage)
-      let previousPage, nextPage
-      switch (currentPage) {
-        case 1:
-          if (totalPage > 1) { //  totalPage > 1, the nextPage will show
-            nextPage = currentPage + 1
-            res.render('index', { menus, pages, first: 1, currentPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-          } else {
-            res.render('index', { menus, pages, first: 1, currentPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-          }
-          break
-        case totalPage:
-          previousPage = currentPage - 1
-          res.render('index', { menus, pages, end: 1, currentPage, previousPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-          break
-        default:
-          nextPage = currentPage + 1
-          previousPage = currentPage - 1
-          res.render('index', { menus, pages, middle: 1, currentPage, previousPage, nextPage, totalPage, keyword, condition: conditionObj, feedback, sortObject, sort })
-          break
-      }
-    })
-    .catch(error => console.log(error))
-}
 
 module.exports = router
